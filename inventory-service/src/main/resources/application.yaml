@@ -1,11 +1,11 @@
 server:
-  port:9090
+  port: 8084
 spring:
   application:
     name: inventory-service
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/orderdb?useSSL=false&serverTimezone=UTC
+    url: jdbc:postgresql://localhost:5433/inventorydb?useSSL=false&serverTimezone=UTC
     username: user
     password: password
   jpa:
@@ -18,8 +18,11 @@ spring:
     open-in-view: false
   kafka:
     bootstrap-servers: localhost:9092
+    producer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     consumer:
-      group-id: "order-group"
+      group-id: "inventory-group"
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer # Deserializer for message keys
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer # Deserializer for message values
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
