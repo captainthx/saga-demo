@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yutsuki.order_service.dto.CreateOrderDto;
 import com.yutsuki.order_service.dto.OrderPayload;
+import com.yutsuki.order_service.dto.OrderResponse;
 import com.yutsuki.order_service.entity.Order;
 import com.yutsuki.order_service.entity.OutBoxEvent;
 import com.yutsuki.order_service.repository.OrderRepository;
@@ -15,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -40,8 +44,26 @@ public class OrderService {
         outBoxEvent.setStatus(OutBoxEvent.OutboxEvent.NEW);
         outBoxEvent.setTimestamp(LocalDateTime.now());
         outboxEventRepository.save(outBoxEvent);
-
         return ResponseEntity.ok().body("create order success.");
+    }
+
+    public ResponseEntity<OrderResponse> getOrderById(String orderId) {
+        var optionalOrder = orderRepository.findById(UUID.fromString(orderId));
+        if (optionalOrder.isEmpty()) {
+            log.warn("GetOrderById-[error].(not found order) orderId:{}", orderId);
+            return ResponseEntity.notFound().build();
+        }
+
+        var order = optionalOrder.get();
+        var response = OrderResponse.fromEntity(order);
+        return ResponseEntity.ok().body(response);
+    }
+
+    public ResponseEntity<List<OrderResponse>> getAllOrders() {
+        var orders = orderRepository.findAll().stream()
+                .map(OrderResponse::fromEntity)
+                .toList();
+        return ResponseEntity.ok().body(orders);
     }
 
     private String convertOrderToJson(Order order) {

@@ -3,7 +3,6 @@ server:
 spring:
   application:
     name: order-service
-
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/orderdb?useSSL=false&serverTimezone=UTC

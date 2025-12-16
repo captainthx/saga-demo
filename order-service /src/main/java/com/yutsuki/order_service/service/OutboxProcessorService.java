@@ -1,7 +1,5 @@
 package com.yutsuki.order_service.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yutsuki.order_service.entity.OutBoxEvent;
 import com.yutsuki.order_service.repository.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,18 +24,12 @@ public class OutboxProcessorService {
                                          @Header(KafkaHeaders.RECEIVED_KEY) String messageKey,
                                          @Header(name = "id", required = false) String outboxEventIdHeader
     ) {
-        log.info("Received message from topic 'outbox.event.ORDER_CREATED'");
-        log.info("Payload: {}", message);
-        log.info("Message Key (Aggregate ID): {}", messageKey);
-        log.info("Outbox Event ID from Header: {}", outboxEventIdHeader);
         if (outboxEventIdHeader == null) {
             log.error("Outbox Event ID is missing in header. Cannot process message.");
             return;
         }
         try {
-            // แปลง String ของ outboxEventIdHeader เป็น UUID
             UUID outboxEventId = UUID.fromString(outboxEventIdHeader);
-            // อัปเดตสถานะเป็น SENT
             outboxEventRepository.markAsSent(outboxEventId);
             log.info("Successfully updated outbox event {} to status SENT", outboxEventId);
         } catch (Exception e) {

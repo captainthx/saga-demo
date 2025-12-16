@@ -1,7 +1,6 @@
 package com.yutsuki.order_service.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import com.yutsuki.order_service.utils.JsonbConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
